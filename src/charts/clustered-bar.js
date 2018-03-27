@@ -1,13 +1,18 @@
-import Plottable from "plottable";
-import { createLinearChart } from '../factories/createLinearChart'
+import Plottable from 'plottable';
+import createBarChart from '../factories/categoric/bar';
 
-export default ({element, data, config: {orientation, ...config}}) => {
+/**
+ * @typedef {LinearCategoryChart} ClusteredBar
+ * @public
+ * @property {'clustered-bar'} type
+ *
+ */
+export default (element, data, config) => {
+  const plot = new Plottable.Plots.ClusteredBar(config.orientation);
 
-  const plot = new Plottable.Plots.ClusteredBar(orientation);
+  const chart = createBarChart(element, plot, config);
 
-  const chart = createLinearChart({element, plot, config: {orientation, ...config}});
+  chart.update(data);
 
-  chart.addData(data);
-
-  return chart
+  return chart;
 };

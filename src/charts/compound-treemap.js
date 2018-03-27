@@ -1,32 +1,37 @@
-import Plottable from "plottable";
-import treemap from "d3-hierarchy/src/treemap";
-import color from "d3-color/src/color";
-import stratify from "d3-hierarchy/src/stratify";
-import approximate from 'approximate-number'
+import Plottable from 'plottable';
+import { treemap } from 'd3';
+import { createTreeHierachy } from '../factories/dataset/index';
+import approximate from '../factories/approximate/index';
+import getTilingMethod from './treemap/tiling';
+import { createColorFiller } from '../factories/tree/index';
 
-export default ({
-                  element, data, config: {
-
+/**
+ * @typedef {TreeChart} CompoundTreemap
+ * @private
+ * @property {'compound-treemap'} type
+ *
+ */
+export default (element, data, config) => {
+  const {
     title = null,
 
     orientation = 'vertical',
 
     titleAlignment = 'left',
 
-    // ... config
+    colors = [],
 
-    // Treemap configuration
-    treemap: {
-      // Tiling algorithm: binary, dice, slice, sliceDice, squarify, resquarify
-      tile = 'sliceDice',
+    coloring = null,
 
-      depth = 2,
+    tree = {
+      id: 'id',
+      parent: 'parent',
+      value: 'value',
+      depth: Infinity,
+    },
 
-    } = {},
-
-    ...config
-  }
-                }) => {
+    // ...
+  } = config;
 
   // ... apply rectangle configuration
 
@@ -45,16 +50,17 @@ export default ({
   const x = orientation === 'vertical' ? 'x' : 'y';
   const y = orientation === 'horizontal' ? 'x' : 'y';
 
-  const createPlot = (plot, xScale, yScale) => plot
-    .x(d => d[`${x}0`], xScale)
-    .y(d => d[`${y}0`], yScale)
-    .x2(d => d[`${x}1`], xScale)
-    .y2(d => d[`${y}1`], yScale)
-    .attr("fill", d => d.data.color)
-    .attr("stroke", d => '#fff')
-    .attr("stroke-width", () => 1)
-    .labelsEnabled(true)
-    .label(d => `${d.data.label} - ${approximate(d.value)}`);
+  const createPlot = (plot, xScale, yScale) =>
+    plot
+      .x(d => d[`${x}0`], xScale)
+      .y(d => d[`${y}0`], yScale)
+      .x2(d => d[`${x}1`], xScale)
+      .y2(d => d[`${y}1`], yScale)
+      .attr('fill', d => d.color)
+      .attr('stroke', () => '#fff')
+      .attr('stroke-width', () => 1)
+      .labelsEnabled(true)
+      .label(d => `${d.data.label} - ${approximate(d.value)}`);
 
   const plot = createPlot(new Plottable.Plots.Rectangle(), xScale, yScale);
 
@@ -64,11 +70,7 @@ export default ({
     .xAlignment(titleAlignment)
     .yAlignment('top');
 
-  const table = new Plottable.Components.Table([
-    [titleLabel],
-    [summaryPlot],
-    [plot],
-  ]);
+  const table = new Plottable.Components.Table([[titleLabel], [summaryPlot], [plot]]);
 
   table.rowPadding(20);
   table.rowWeight(1, 1);
@@ -76,55 +78,36 @@ export default ({
 
   table.renderTo(element);
 
-  const tilingMethod = require(`d3-hierarchy/src/treemap/${tile}.js`);
+  const tilingMethod = getTilingMethod({method: 'sliceDice'});
 
-  const layout = treemap().tile(tilingMethod.default);
+  const layout = treemap().tile(tilingMethod);
 
-  const createTreeHierachy = ({series}) => {
+  const colorize = createColorFiller(colors, [], coloring);
 
-    const stratifyFactory = stratify()
-      .id(d => d.label)
-      .parentId(d => d.parent);
+  const update = data => {
+    const root = colorize(createTreeHierachy(data, tree));
 
-    return stratifyFactory(series)
-      .sum(d => d.value)
-      .sort((b, a) => {
-        return a.value - b.value
-      });
+    const rectangles = layout(root).descendants();
 
+    const all = rectangles.filter(d => d.depth <= 2);
+
+    plot.datasets([new Plottable.Dataset(all)]);
+
+    const summary = rectangles.filter(d => d.depth === 1);
+
+    summaryPlot.datasets([new Plottable.Dataset(summary)]);
   };
-
   const chart = {
+    table,
 
-    addData: data => {
+    update,
 
-      const root = createTreeHierachy(data);
-
-      const actualDepth = depth === Infinity ? root.height : depth;
-
-      const rectangles = layout(root).descendants();
-
-      const all = rectangles
-        .map(d => {
-
-          d.data.color = !d.data.color && d.parent && d.parent.data.color ?
-            color(d.parent.data.color).brighter(d.parent.children.indexOf(d) * 0.4).toString() :
-            d.data.color;
-
-          return d;
-        })
-        .filter(d => d.depth <= actualDepth)
-
-      plot.datasets([new Plottable.Dataset(all)]);
-
-      const summary = rectangles.filter(d => d.depth === 1);
-
-      summaryPlot.datasets([new Plottable.Dataset(summary)]);
-    }
-
+    destroy: () => {
+      table.destroy();
+    },
   };
 
-  chart.addData(data);
+  chart.update(data, tree);
 
-  return chart
+  return chart;
 };

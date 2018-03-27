@@ -1,18 +1,280 @@
 @import "../node_modules/plottable/plottable.css";
 
-.plottable .title-label text {
-  font-size: 16px;
-  font-weight: 400;
-}
+.plottable {
+  font-family: geomanist, 'sans-serif';
+  .foreground-container { overflow: visible}
+  body {
+    background: transparent;
+    width: 100%
+  }
+  .custom-label {
+    background: transparent;
+    width: 30%; 
+    font-size: 12px;
+    display: block;
+    color:white; 
+    margin: 0 auto
+  }
+  .legend text {
+    font-family: geomanist, 'sans-serif';
+    font-weight: normal;
+  }
 
-.plottable .gridlines line {
-  stroke: #3C3C3C;
-  opacity: 0.25;
-  stroke-width: 1px;
-  stroke-dasharray: 1 5;
-}
+  .background-container, .content, .foreground-container {
+    left: 0;
+    top: 0;
+  }
 
-.plottable .rectangle-plot rect:before {
-  content: attr(title);
-  display: block;
+  .title-label text {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .gridlines line {
+    stroke: #3C3C3C;
+    opacity: 0.25;
+    stroke-width: 1px;
+  }
+
+  .rectangle-plot rect:before {
+    content: attr(title);
+    display: block;
+  }
+
+  .light-label {
+    color: #fff;
+  }
+
+  .dark-label {
+    color: #000;
+  }
+
+  .axis line.tick-mark {
+    stroke-width: 1px;
+  }
+
+  .table.time .foreground-container {
+    pointer-events: all;
+    overflow: visible
+  }
+
+  .legend-entry {
+     cursor: pointer;
+     fill: grey;
+  }
+
+  .table.time .time-axis .tick-mark:last-child {
+    visibility: hidden;
+  }
+
+  .axis.axis-tick-none .tick-label,
+  .axis.axis-tick-even .tick-label,
+  .axis.axis-tick-odd .tick-label,
+  .axis.axis-tick-end .tick-label,
+  .axis.axis-tick-sparse .tick-label,
+  .axis.axis-tick-none .tick-mark,
+  .axis.axis-tick-even .tick-mark,
+  .axis.axis-tick-odd .tick-mark,
+  .axis.axis-tick-end .tick-mark,
+  .axis.axis-tick-sparse .tick-mark,
+  .gridlines.gridlines-tick-none line,
+  .gridlines.gridlines-tick-even line,
+  .gridlines.gridlines-tick-odd line,
+  .gridlines.gridlines-tick-end line,
+  .gridlines.gridlines-tick-sparse line {
+    visibility: hidden !important;
+    display: none;
+  }
+
+  .axis.axis-tick-all .tick-label,
+  .axis.axis-tick-even .tick-label:nth-child(2n),
+  .axis.axis-tick-sparse .tick-label:nth-child(4n+1),
+  .axis.axis-tick-odd .tick-label:nth-child(2n+1),
+  .axis.axis-tick-end .tick-label:first-child,
+  .axis.axis-tick-end .tick-label:last-child,
+  .axis.axis-tick-all .tick-mark,
+  .axis.axis-tick-even .tick-mark:nth-child(2n),
+  .axis.axis-tick-sparse .tick-mark:nth-child(4n+1),
+  .axis.axis-tick-odd .tick-mark:nth-child(2n+1),
+  .axis.axis-tick-end .tick-mark:first-child,
+  .axis.axis-tick-end .tick-mark:last-child,
+  .gridlines.gridlines-tick-all line,
+  .gridlines.gridlines-tick-even line:nth-child(2n),
+  .gridlines.gridlines-tick-odd line:nth-child(2n+1),
+  .gridlines.gridlines-tick-sparse line:nth-child(2n+1),
+  .gridlines.gridlines-tick-end line:first-child,
+  .gridlines.gridlines-tick-end line:last-child {
+    visibility: visible !important;
+    display: block;
+  }
+
+  .table.time .symbol,
+  .table.time .symbol-line,
+  .table.time .symbol-label {
+    cursor: ew-resize;
+    user-select: none;
+  }
+
+  .table.time .symbol-label {
+    fill: #fff;
+  }
+
+  // Dual Sidebar labels
+  .group-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    fill: #453f43
+  }
+
+  .subGroup-label {
+    font-size: 12px;
+    font-weight: 100;
+    text-transform: uppercase
+  }
+
+  .data-label {
+    fill: #777;
+    font-size: 12px;
+  }
+
+  // Tree chart labels
+  .plot-label {
+    padding: 0.4em;
+    overflow: hidden;
+    line-height: 1;
+
+    .plot-label-header {
+      font-weight: 500;
+      padding-bottom: 0.1em;
+    }
+
+    .plot-label-value {
+      font-weight: 500;
+      font-size: 0.7em;
+    }
+
+    &.hover-label {
+      color: #aaa;
+    }
+
+  }
+
+  foreignObject {
+    overflow: hidden;
+  }
+
+  .tooltip {
+    padding: 5px 10px;
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    z-index: 1000;
+
+    .tooltip-inner {
+      padding-bottom: 5px;
+      font-weight: 700;
+    }
+
+    .tooltip-body {
+      text-align: left;
+      font-size: 0.8em;
+
+      table {
+        border-collapse:collapse;
+        min-width: 200px;
+
+        td {
+          padding: 0.5em 0;
+          border-top: 1px #ccc solid;
+        }
+      }
+    }
+
+    .tooltip-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: 11px solid transparent;
+
+      &:before {
+        content: ' ';
+        position: absolute;
+        left: -10px;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+      }
+    }
+
+    // When tooltip faces left
+    &[x-placement='right'] {
+      margin-left: 10px;
+
+      .tooltip-arrow {
+        top: 10px;
+        left: -20px;
+        border-right-color: rgba(0, 0, 0, 0.25);
+      }
+
+      .tooltip-arrow:before {
+        top: -10px;
+        left: -9px;
+        border-right-color: #fff;
+      }
+
+    }
+
+    // When tooltip faces right
+    &[x-placement='left'] {
+      margin-right: 10px;
+
+      .tooltip-arrow {
+        top: 10px;
+        right: -20px;
+        border-left-color: rgba(0, 0, 0, 0.25);
+      }
+
+      .tooltip-arrow:before {
+        top: -10px;
+        left: -11px;
+        border-left-color: #fff;
+      }
+
+    }
+
+    // When tooltip faces up
+    &[x-placement='bottom'] {
+      margin-top: 10px;
+
+      .tooltip-arrow {
+        top: -20px;
+        border-bottom-color: rgba(0, 0, 0, 0.25);
+      }
+
+      .tooltip-arrow:before {
+        top: -9px;
+        border-bottom-color: #fff;
+      }
+
+    }
+
+    // When tooltip faces down
+    &[x-placement='top'] {
+      margin-bottom: 10px;
+
+      .tooltip-arrow {
+        bottom: -20px;
+        border-top-color: rgba(0, 0, 0, 0.25);
+      }
+
+      .tooltip-arrow:before {
+        bottom: -9px;
+        border-top-color: #fff;
+      }
+
+    }
+
+  }
 }

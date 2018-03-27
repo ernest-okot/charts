@@ -1,15 +1,22 @@
-import Plottable from "plottable";
-import { createLinearChart } from '../factories/createLinearChart'
+import Plottable from 'plottable';
+import createBarChart from '../factories/categoric/bar';
 
-export default ({element, data, config: {orientation, ...config}}) => {
+/**
+ * @typedef {LinearCategoryChart} Bar
+ * @public
+ * @property {'bar'} type
+ *
+ */
+export default (element, data, config) => {
+  const { orientation } = config;
 
   const plot = new Plottable.Plots.Bar(orientation);
 
   // ... apply bar configuration
 
-  const chart = createLinearChart({element, plot, config: {orientation, ...config}});
+  const chart = createBarChart(element, plot, config);
 
-  chart.addData(data);
+  chart.update(data);
 
-  return chart
+  return chart;
 };

@@ -1,15 +1,22 @@
-import Plottable from "plottable";
-import {createLineChart} from "./line";
+import Plottable from 'plottable';
+import { createLineChart } from '../factories/categoric/line';
 
-export default ({element, data, config}) => {
-
+/**
+ * @typedef {LinearCategoryChart} Area
+ * @public
+ * @property {'area'} type
+ *
+ */
+const area = (element, data, config) => {
   const plot = new Plottable.Plots.Area();
 
   // ... apply area configuration
 
   const chart = createLineChart(element, plot, config);
 
-  chart.addData(data);
+  chart.update(data);
 
-  return chart
+  return chart;
 };
+
+export default area;
